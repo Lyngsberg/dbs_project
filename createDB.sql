@@ -1,5 +1,3 @@
--- Active: 1742461234055@@127.0.0.1@3306@libraryDB
--- Drop existing tables if they exist
 DROP TABLE IF EXISTS fine;
 DROP TABLE IF EXISTS borrowed;
 DROP TABLE IF EXISTS genre;

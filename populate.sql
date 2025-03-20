@@ -1,4 +1,3 @@
--- Populate `book` table (ISBN is now primary key, so no duplicates)
 INSERT INTO book (ISBN, title, borrow_time, price)
 VALUES
   ('978-0345391803', 'The Hitchhiker\'s Guide to the Galaxy', 14, 5),
