@@ -1,3 +1,4 @@
+-- Active: 1742461234055@@127.0.0.1@3306@libraryDB
 -- Drop existing tables if they exist
 DROP TABLE IF EXISTS fine;
 DROP TABLE IF EXISTS borrowed;
@@ -10,11 +11,12 @@ DROP TABLE IF EXISTS author;
 
 -- Table for books (overview of books)
 CREATE TABLE book (
-  ISBN VARCHAR(13) NOT NULL UNIQUE PRIMARY KEY,  -- ISBN as the primary key for the book
+  book_id INT PRIMARY KEY AUTO_INCREMENT,
+  ISBN VARCHAR(13) NOT NULL UNIQUE, 
   title VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   borrow_time INT,
-  fine INT
+  price INT
 );
 
 -- Table for genres
@@ -32,12 +34,6 @@ CREATE TABLE users (
   name VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL
 );
-CREATE TABLE bookcopies (
-  book_id INT AUTO_INCREMENT,
-  ISBN VARCHAR(13),
-  PRIMARY KEY (book_id),
-  FOREIGN KEY (ISBN) REFERENCES book(ISBN) ON DELETE CASCADE
-);
 -- Table for authors
 CREATE TABLE author (
   author_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -51,8 +47,8 @@ CREATE TABLE borrowed (
   expiration_date TIMESTAMP,
   returned_at TIMESTAMP,
   PRIMARY KEY (book_id, userId),
-  FOREIGN KEY (book_id) REFERENCES bookcopies(book_id) ON DELETE CASCADE,
-  FOREIGN KEY (userId) REFERENCES users(userid) ON DELETE CASCADE
+  FOREIGN KEY (book_id) REFERENCES book(book_id) ON DELETE CASCADE,
+  FOREIGN KEY (userid) REFERENCES users(userid) ON DELETE CASCADE
 );
 
 -- Table for authorship (written)
