@@ -4,29 +4,20 @@ LEFT JOIN bookcopies bk ON bo.book_id = bk.book_id
 LEFT JOIN book b ON bk.ISBN = b.ISBN
 LEFT JOIN users u ON bo.userId = u.userid;
 
-SELECT b.*, u.* from borrowed bo
-LEFT JOIN bookcopies bk ON bo.book_id = bk.book_id
-LEFT JOIN book b ON bk.ISBN = b.ISBN
-LEFT JOIN users u ON bo.userId = u.userid
-WHERE bo.borrowed_at > '2023-01-01 00:00:00'
-GROUP BY bo.userId
-HAVING COUNT(*) > 1;
+-- 6.2 A table of all books that have been borrowed by a specific user
+delimiter $$
+CREATE FUNCTION amount_of_books_borrowed(vuserid VARCHAR(15))
+RETURNS INT
+BEGIN
+    DECLARE book_count INT;
+    SELECT COUNT(*) into book_count from borrowed where userId = vuserid; 
+    
+    RETURN book_count;
+END $$
+delimiter;
 
-SELECT b.*, u.* from borrowed bo
-LEFT JOIN bookcopies bk ON bo.book_id = bk.book_id
-LEFT JOIN book b ON bk.ISBN = b.ISBN
-LEFT JOIN users u ON bo.userId = u.userid
-WHERE bo.borrowed_at > '2023-01-01 00:00:00'
-GROUP BY bo.userId
-HAVING COUNT(*) > 1
-UNION
-SELECT b.*, u.* from borrowed bo
-LEFT JOIN bookcopies bk ON bo.book_id = bk.book_id
-LEFT JOIN book b ON bk.ISBN = b.ISBN
-LEFT JOIN users u ON bo.userId = u.userid
-WHERE bo.borrowed_at > '2023-01-01 00:00:00'
-GROUP BY bo.userId
-HAVING COUNT(*) > 1;
+select name, amount_of_books_borrowed(userId) from users
+
 
 
 CREATE FUNCTION has_unpaid_fine( vuserid VARCHAR(15) )
