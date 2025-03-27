@@ -1,4 +1,5 @@
 -- 6.1: A table of all borrowed books
+-- Active: 1738836473627@@127.0.0.1@3306@db_project
 SELECT b.*, u.* from borrowed bo
 LEFT JOIN bookcopies bk ON bo.book_id = bk.book_id 
 LEFT JOIN book b ON bk.ISBN = b.ISBN
@@ -30,8 +31,6 @@ BEGIN
     RETURN unpaid_fine;
 END;
 
-
-
 CREATE TRIGGER Manual_Insert
     BEFORE INSERT
 ON borrowed FOR EACH ROW
@@ -40,12 +39,13 @@ BEGIN
     SET MYSQL_ERRNO = 9998, MESSAGE_TEXT = 'Must use procedure InsertBorrowed';
 END;
 
-
-
 create Procedure InsertBorrowed
     (IN book_id int, IN userId int, IN borrowed_at TIMESTAMP, IN expiration_date TIMESTAMP, IN returned_at TIMESTAMP)
 BEGIN 
     IF has_unpaid_fine(userID) THEN
-        SET MYSQL_ERRNO = 9999, MESSAGE_TEXT = "Cannot borrow a book, has a fine";
+        SIGNAL SQLSTATE "HY001"
+        SET MYSQL_ERRNO = 9999, MESSAGE_TEXT = 'Cannot borrow book, has a fine';
     END IF;
+    INSERT INTO Borrowed (book_id, userId, borrowed_at, expiration_date, returned_at)
+    VALUES (book_id, userId, borrowed_at, expiration_date, returned_at);
 END;
