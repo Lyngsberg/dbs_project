@@ -69,15 +69,22 @@ END
 CREATE PROCEDURE AddOverdueFines()
 BEGIN
     INSERT INTO fine (book_id, userId, borrowed_at, fine, paid)
-    SELECT b.book_id, b.userId, b.borrowed_at, 100, "no"
+    SELECT 
+        b.book_id, 
+        b.userId, 
+        b.borrowed_at, 
+        bo.price,  
+        FALSE      
     FROM borrowed b
+    JOIN bookcopies bc ON b.book_id = bc.book_id  
+    JOIN book bo ON bc.ISBN = bo.ISBN            
     LEFT JOIN fine f 
       ON b.book_id = f.book_id 
      AND b.userId = f.userId
      AND b.borrowed_at = f.borrowed_at
-    WHERE b.returned_at IS NULL             
-      AND b.expiration_date < NOW()          
-      AND f.book_id IS NULL;                
+    WHERE b.returned_at IS NULL              
+      AND b.expiration_date < NOW()         
+      AND f.book_id IS NULL;                 
 END
 
 
