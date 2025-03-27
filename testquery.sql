@@ -1,4 +1,3 @@
--- Active: 1743060890162@@127.0.0.1@3306@library_db306@db_project
 -- 6.1: A table of all borrowed books
 SELECT b.*, u.* from borrowed bo
 LEFT JOIN bookcopies bk ON bo.book_id = bk.book_id 
@@ -71,7 +70,6 @@ BEGIN
 END
 
 
-
 -- 7.4 PROCEDURE to add overdue fines
 CREATE PROCEDURE AddOverdueFines()
 BEGIN
@@ -95,7 +93,9 @@ BEGIN
 END
 
 
+select * from fine
 
+CALL `AddOverdueFines`()
 
 
 -- deletion and updating?
