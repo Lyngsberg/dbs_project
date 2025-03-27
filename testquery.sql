@@ -30,24 +30,39 @@ BEGIN
     RETURN unpaid_fine;
 END;
 
-CREATE TRIGGER Manual_Insert
-    BEFORE INSERT
-ON borrowed FOR EACH ROW
+CREATE TRIGGER CheckBeforeInsertBorrowed
+BEFORE INSERT ON borrowed
+FOR EACH ROW
 BEGIN
-    SIGNAL SQLSTATE 'HY000'
-    SET MYSQL_ERRNO = 9998, MESSAGE_TEXT = 'Must use procedure InsertBorrowed';
-END;
+    DECLARE has_fine BOOLEAN;
 
-create Procedure InsertBorrowed
-    (IN book_id int, IN userId int, IN borrowed_at TIMESTAMP, IN expiration_date TIMESTAMP, IN returned_at TIMESTAMP)
-BEGIN 
-    IF has_unpaid_fine(userID) THEN
-        SIGNAL SQLSTATE "HY001"
-        SET MYSQL_ERRNO = 9999, MESSAGE_TEXT = 'Cannot borrow book, has a fine';
+    -- Check if the user has an unpaid fine
+    SELECT has_unpaid_fine(NEW.userId) INTO has_fine;
+
+    -- If the user has a fine, prevent the insertion
+    IF has_fine THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot borrow book, has a fine';
     END IF;
-    INSERT INTO Borrowed (book_id, userId, borrowed_at, expiration_date, returned_at)
-    VALUES (book_id, userId, borrowed_at, expiration_date, returned_at);
-END;
+END
+
+
+
+CREATE PROCEDURE AddOverdueFines()
+BEGIN
+    INSERT INTO fine (book_id, userId, borrowed_at, fine, paid)
+    SELECT b.book_id, b.userId, b.borrowed_at, 100, "no"
+    FROM borrowed b
+    LEFT JOIN fine f 
+      ON b.book_id = f.book_id 
+     AND b.userId = f.userId
+     AND b.borrowed_at = f.borrowed_at
+    WHERE b.returned_at IS NULL             
+      AND b.expiration_date < NOW()          
+      AND f.book_id IS NULL;                
+END
+
+
 
 
 SELECT * FROM bookcopies;
