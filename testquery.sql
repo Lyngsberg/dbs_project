@@ -36,7 +36,7 @@ delimiter;
 select name, amount_of_books_borrowed(userId) from users
 
 
-
+-- returns amount user has yet to pay
 CREATE FUNCTION has_unpaid_fine( vuserid VARCHAR(15) )
 RETURNS INT
 BEGIN
@@ -47,6 +47,7 @@ BEGIN
     RETURN unpaid_fine;
 END;
 
+-- checks for fine before borrowing
 CREATE TRIGGER CheckBeforeInsertBorrowed
 BEFORE INSERT ON borrowed
 FOR EACH ROW
@@ -82,17 +83,14 @@ END
 
 
 
-SELECT * FROM bookcopies;
-SELECT * FROM book;
 
+-- deletion and updating?
 SET @isbn_to_delete = (SELECT ISBN FROM bookcopies WHERE book_id = 7);
 DELETE FROM bookcopies WHERE book_id = 7;
 DELETE FROM book 
 WHERE ISBN = @isbn_to_delete 
 AND NOT EXISTS (SELECT 1 FROM bookcopies WHERE ISBN = @isbn_to_delete);
-SELECT * FROM bookcopies;
-SELECT * FROM book;
 
+-- return book?
 UPDATE borrowed SET returned_at = '2023-01-01 00:00:00' 
 WHERE book_id = 1 AND userId = 1;
-SELECT * FROM borrowed;
