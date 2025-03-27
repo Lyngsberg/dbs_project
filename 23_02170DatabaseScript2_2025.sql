@@ -21,7 +21,7 @@ join book on bookcopies.ISBN = book.ISBN
 where fine.paid = 0;
 
 
--- Amount of books borrowed by a user
+-- 7.1 FUNCTION Amount of books borrowed by a user
 delimiter $$
 CREATE FUNCTION amount_of_books_borrowed(vuserid VARCHAR(15))
 RETURNS INT
@@ -36,7 +36,7 @@ delimiter;
 select name, amount_of_books_borrowed(userId) from users
 
 
--- returns amount user has yet to pay
+-- 7.2 FUNCTION returns amount user has yet to pay
 CREATE FUNCTION has_unpaid_fine( vuserid VARCHAR(15) )
 RETURNS INT
 BEGIN
@@ -47,7 +47,7 @@ BEGIN
     RETURN unpaid_fine;
 END;
 
--- checks for fine before borrowing
+-- 7.3 TRIGGER checks for fine before borrowing
 CREATE TRIGGER CheckBeforeInsertBorrowed
 BEFORE INSERT ON borrowed
 FOR EACH ROW
@@ -65,7 +65,7 @@ BEGIN
 END
 
 
-
+-- 7.4 PROCEDURE for overdue fines 
 CREATE PROCEDURE AddOverdueFines()
 BEGIN
     INSERT INTO fine (book_id, userId, borrowed_at, fine, paid)
