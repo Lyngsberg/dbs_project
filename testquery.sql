@@ -1,5 +1,5 @@
--- 6.1: A table of all borrowed books
 -- Active: 1743060890162@@127.0.0.1@3306@library_db306@db_project
+-- 6.1: A table of all borrowed books
 SELECT b.*, u.* from borrowed bo
 LEFT JOIN bookcopies bk ON bo.book_id = bk.book_id 
 LEFT JOIN book b ON bk.ISBN = b.ISBN
@@ -20,8 +20,14 @@ join bookcopies on fine.book_id = bookcopies.book_id
 join book on bookcopies.ISBN = book.ISBN
 where fine.paid = 0;
 
+-- 6.4 a table of things you can "search" for (author names and book names)
+SELECT title AS name, 'Book' AS type FROM book
+UNION
+SELECT name AS name, 'Author' AS type FROM author;
 
--- Amount of books borrowed by a user
+
+
+-- 7.1 FUNCTION Amount of books borrowed by a user
 delimiter $$
 CREATE FUNCTION amount_of_books_borrowed(vuserid VARCHAR(15))
 RETURNS INT
@@ -36,7 +42,7 @@ delimiter;
 select name, amount_of_books_borrowed(userId) from users
 
 
--- returns amount user has yet to pay
+-- 7.2 FUNCTION returns amount user has yet to pay
 CREATE FUNCTION has_unpaid_fine( vuserid VARCHAR(15) )
 RETURNS INT
 BEGIN
@@ -47,7 +53,7 @@ BEGIN
     RETURN unpaid_fine;
 END;
 
--- checks for fine before borrowing
+-- 7.3 TRIGGER checks for fine before borrowing
 CREATE TRIGGER CheckBeforeInsertBorrowed
 BEFORE INSERT ON borrowed
 FOR EACH ROW
@@ -66,6 +72,7 @@ END
 
 
 
+-- 7.4 PROCEDURE to add overdue fines
 CREATE PROCEDURE AddOverdueFines()
 BEGIN
     INSERT INTO fine (book_id, userId, borrowed_at, fine, paid)
