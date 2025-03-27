@@ -20,6 +20,13 @@ join bookcopies on fine.book_id = bookcopies.book_id
 join book on bookcopies.ISBN = book.ISBN
 where fine.paid = 0;
 
+-- 6.4 a table of things you can "search" for (author names and book names)
+SELECT title AS name, 'Book' AS type FROM book
+UNION
+SELECT name AS name, 'Author' AS type FROM author;
+
+
+
 
 -- 7.1 FUNCTION Amount of books borrowed by a user
 delimiter $$
@@ -46,6 +53,8 @@ BEGIN
     WHERE userId = vuserid AND paid = 0;
     RETURN unpaid_fine;
 END;
+
+select users.name, has_unpaid_fine(users.userid) from users;
 
 -- 7.3 TRIGGER checks for fine before borrowing
 CREATE TRIGGER CheckBeforeInsertBorrowed
