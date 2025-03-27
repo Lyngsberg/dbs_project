@@ -1,5 +1,5 @@
+
 -- 6.1: A table of all borrowed books
--- Active: 1743060890162@@127.0.0.1@3306@library_db306@db_project
 SELECT b.*, u.* from borrowed bo
 LEFT JOIN bookcopies bk ON bo.book_id = bk.book_id 
 LEFT JOIN book b ON bk.ISBN = b.ISBN
@@ -63,7 +63,6 @@ BEGIN
         SET MESSAGE_TEXT = 'Cannot borrow book, has a fine';
     END IF;
 END
-
 
 
 CREATE PROCEDURE AddOverdueFines()
