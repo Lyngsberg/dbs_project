@@ -1,3 +1,7 @@
+drop DATABASE if exists library_db;
+create database library_db;
+use library_db;
+
 DROP TABLE IF EXISTS fine;
 DROP TABLE IF EXISTS borrowed;
 DROP TABLE IF EXISTS genre;
